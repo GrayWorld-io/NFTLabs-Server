@@ -85,7 +85,7 @@ exports.getTransferTx = async (operatorPay, tokenId, serial, nftMintingAccountId
     .setNodeAccountIds([new AccountId(3)])
     .addNftTransfer(tokenId, serial, operatorAccount, nftMintingAccountId)
     .addHbarTransfer(nftMintingAccountId, -price)
-    .addHbarTransfer(grayworldAccount, price)
+    .addHbarTransfer(operatorAccount, price)
     .setTransactionId(txId)
     .setTransactionMemo("[GW]Token Transfer")
     .freezeWith(client)
