@@ -34,23 +34,6 @@ if (process.env.HEDERA_NETWORK != null) {
   }
 }
 
-// getClient = () => {
-//   if (process.env.HEDERA_NETWORK != null) {
-//     switch (process.env.HEDERA_NETWORK) {
-//         case "previewnet":
-//             client = Client.forPreviewnet();    
-//             break;
-//         case "mainnet":
-//             client = Client.forMainnet();
-//             break;
-//         default:
-//             client = Client.forTestnet();
-//       return client.setOperator(operatorAccount, operatorPrivateKey);
-//     }
-//   }
-//   return new Error("can not find Hedera client");
-// }
-
 exports.getTokenMintTransaction = async (operatorPay, accountId, tokenId, storage, cid) => {
   let txId;
   if (operatorPay) {
@@ -66,6 +49,7 @@ exports.getTokenMintTransaction = async (operatorPay, accountId, tokenId, storag
         .setTokenId(tokenId)
         .setMetadata([Buffer.from(metadataUrl)])
         .setTransactionId(txId)
+        .setTransactionMemo("[GW]Token Mint")
         .freezeWith(client)
         .sign(PrivateKey.fromString(operatorPrivateKey));
   return tx;
@@ -103,6 +87,7 @@ exports.getTransferTx = async (operatorPay, tokenId, serial, nftMintingAccountId
     .addHbarTransfer(nftMintingAccountId, -price)
     .addHbarTransfer(grayworldAccount, price)
     .setTransactionId(txId)
+    .setTransactionMemo("[GW]Token Transfer")
     .freezeWith(client)
     .sign(PrivateKey.fromString(operatorPrivateKey))
   return tx;
@@ -121,6 +106,7 @@ exports.getTokenAssociateTx = async (operatorPay, accountId, tokenId) => {
     .setAccountId(accountId)
     .setTokenIds([tokenId])
     .setTransactionId(txId)
+    .setTransactionMemo("[GW]Token Associate")
     .freezeWith(client)
     .sign(PrivateKey.fromString(operatorPrivateKey))
   return tx;

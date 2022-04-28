@@ -50,7 +50,7 @@ console.log(process.env.HEDERA_NETWORK)
         .setWipeKey(client.operatorPublicKey)
         .setSupplyKey(client.operatorPublicKey)
         .setFreezeDefault(false)
-        .setTransactionMemo("Initial Create GSS #1")
+        .setTransactionMemo("[GW] Initial Create GSS #1")
         .setTokenMemo("Gray Seminar Souvenir #1")
         .execute(client);
 
