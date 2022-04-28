@@ -10,6 +10,15 @@ exports.selectHederaGraySeminarMetadata = async (serial) => {
   return rows;
 };
 
+exports.insertCid = async (storage, cid) => {
+  let sql = `INSERT INTO hedera_seminar_metadata (storage, cid) VALUES ('${storage}', '${cid}') `;
+  logger.info(sql);
+
+  let connection = await dbConnect.getDBCon();
+  await connection.query(sql);
+  return true;
+};
+
 // exports.updateTokenOwner = function (mint, callback) {
 //   let sql = `UPDATE hedera_freshman_mint SET owner = ('${mint.owner}')`;
 //   logger.info(sql);

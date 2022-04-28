@@ -25,11 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.use('/', indexRouter);
-// app.use('/user', userRouter);
 app.use('/token', tokenRouter);
-// app.use('/hbar', hbarRouter);
-// app.use('/msg', msgRouter);
-
 app.use('/mint', mintRouter);
 
 // catch 404 and forward to error handler
