@@ -10,6 +10,9 @@ exports.tokenAssociate = async (req) => {
   if (req.project == 'gray_seminar_1') {
     tokenId = constants.GRAY_SEMINAR_1_TOKEN_ID;
     operatorPay = true;
+  } else if (req.project == 'gray_seminar_2') {
+    tokenId = constants.GRAY_SEMINAR_2_TOKEN_ID;
+    operatorPay = true;
   }
   const tx = await hedera.getTokenAssociateTx(operatorPay, req.accountId, tokenId);
   return tx.toBytes();

@@ -18,6 +18,11 @@ const SERIAL_START = constants.SERIAL_START;
 const GRAY_SEMINAR_1 = constants.GRAY_SEMINAR_1;
 const GRAY_SEMINAR_SUPPLY_MAX = constants.GRAY_SEMINAR_SUPPLY_MAX;
 const GRAY_SEMINAR_1_TOKEN_ID = constants.GRAY_SEMINAR_1_TOKEN_ID;
+
+const GRAY_SEMINAR_2 = constants.GRAY_SEMINAR_2;
+const GRAY_SEMINAR_2_SUPPLY_MAX = constants.GRAY_SEMINAR_2_SUPPLY_MAX;
+const GRAY_SEMINAR_2_TOKEN_ID = constants.GRAY_SEMINAR_2_TOKEN_ID;
+
 const GRAY_SEMINAR_METADATA_PROTOCOL = constants.GRAY_SEMINAR_METADATA_PROTOCOL;
 const GRAY_SEMINAR_MINT_PRICE = constants.GRAY_SEMINAR_MINT_PRICE;
 
@@ -35,24 +40,35 @@ const GRAY_SEMINAR_MINT_PRICE = constants.GRAY_SEMINAR_MINT_PRICE;
 
 exports.updateClaimStatus = async (req) => {
   const project = req.project;
-  if (project === GRAY_SEMINAR_1) {
+  // if (project === GRAY_SEMINAR_1) {
+  //   graySeminarMintDB.updateClaimByMintAddress(req.accountId, 1);
+  // } else if (project === GRAY_SEMINAR_1) {
+  //   graySeminarMintDB.updateClaimByMintAddress(req.accountId, 1);
+  // } else {
+  //   return false;
+  // }
+  if (project === GRAY_SEMINAR_2) {
     graySeminarMintDB.updateClaimByMintAddress(req.accountId, 1);
   } else {
     return false;
   }
-  
   return true;
 }
 
 exports.claim = async (req) => {
   const project = req.project;
-  if (project === GRAY_SEMINAR_1) {
+  if (project === GRAY_SEMINAR_2) {
     const serials = await graySeminarMintDB.selectHederaGraySeminarMintAddress(req.accountId, 0);
     if (serials.length !== 1) {
       return false;
     }
     const operatorPay = true;
-    const tx = await hedera.getTransferTx(operatorPay, GRAY_SEMINAR_1_TOKEN_ID, serials[0].serial, req.accountId, GRAY_SEMINAR_MINT_PRICE);
+    let tx = '';
+    if (project === GRAY_SEMINAR_1){
+      tx = await hedera.getTransferTx(operatorPay, GRAY_SEMINAR_1_TOKEN_ID, serials[0].serial, req.accountId, GRAY_SEMINAR_MINT_PRICE);
+    } else if (project ==GRAY_SEMINAR_2) {
+      tx = await hedera.getTransferTx(operatorPay, GRAY_SEMINAR_2_TOKEN_ID, serials[0].serial, req.accountId, GRAY_SEMINAR_MINT_PRICE);
+    }
     return tx.toBytes();
   }
   return false;
@@ -70,9 +86,9 @@ exports.getMintTx = async (req) => {
   }
   const cid = await selectMetadata(req.project, randImgIndex);
   let tx;
-  if (project == GRAY_SEMINAR_1) {
+  if (project == GRAY_SEMINAR_2) {
     const operatorPay = true;
-    tx = await hedera.getTokenMintTransaction(operatorPay, req.accountId, GRAY_SEMINAR_1_TOKEN_ID, GRAY_SEMINAR_METADATA_PROTOCOL, cid[0].cid)
+    tx = await hedera.getTokenMintTransaction(operatorPay, req.accountId, GRAY_SEMINAR_2_TOKEN_ID, GRAY_SEMINAR_METADATA_PROTOCOL, cid[0].cid)
   }
   
   return tx.toBytes();
@@ -84,9 +100,9 @@ exports.sendMintTx = async (req) => {
     return false;
   }
   const serial = await hedera.sendTokenMintTransaction(req.signedTx)
-  if (req.project == GRAY_SEMINAR_1) {
+  if (req.project == GRAY_SEMINAR_2) {
     let data = {
-      tokenId: GRAY_SEMINAR_1_TOKEN_ID,
+      tokenId: GRAY_SEMINAR_2_TOKEN_ID,
       serial: serial[0].toString(),
       mintAddress: req.accountId
     }
@@ -100,7 +116,7 @@ exports.sendMintTx = async (req) => {
 
 checkMintable = async (project, accountId, claim) => {
   let unClaimHistory;
-  if (project === GRAY_SEMINAR_1) {
+  if (project === GRAY_SEMINAR_2) {
     unClaimHistory = await graySeminarMintDB.selectHederaGraySeminarMintAddress(accountId, claim)
   } else if (project == "freshman") {
     unClaimHistory = await freshManMintDB.selectHederaFreshmManMintAddress(accountId, claim)
@@ -119,7 +135,7 @@ checkMintable = async (project, accountId, claim) => {
 }
 
 selectMetadata = async (project, index) => {
-  if (project == GRAY_SEMINAR_1) {
+  if (project == GRAY_SEMINAR_2) {
     return await graySeminarMetadataDB.selectHederaGraySeminarMetadata(index);
   } else if (project == "freshman") {
     return await freshManMetadataDB.selectHederaFreshmManMetadata(index);
@@ -127,8 +143,8 @@ selectMetadata = async (project, index) => {
 }
 
 getRandomNumber = (project) => {
-  if (project == GRAY_SEMINAR_1) {
-    return Math.floor(Math.random() * (GRAY_SEMINAR_SUPPLY_MAX - SERIAL_START)) + SERIAL_START;
+  if (project == GRAY_SEMINAR_2) {
+    return Math.floor(Math.random() * (GRAY_SEMINAR_2_SUPPLY_MAX - SERIAL_START)) + SERIAL_START;
   } else if (project == "freshman") {
     return Math.floor(Math.random() * (FRESHMAN_MAX - SERIAL_START)) + SERIAL_START;
   }
@@ -147,7 +163,7 @@ getMintableSerial = async (project, accountId) => {
 
   // }
   let mintCount = 0;
-  if (project == GRAY_SEMINAR_1) {
+  if (project == GRAY_SEMINAR_2) {
     let res = await graySeminarMintDB.selectHederaGraySeminarMintAddress(accountId, null);
     if (res.length > 0) {
       return -1;

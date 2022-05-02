@@ -11,7 +11,7 @@ const {
 
 const constants = require("../lib/constants");
 
-const GRAY_SEMINAR_SUPPLY_MAX = constants.GRAY_SEMINAR_SUPPLY_MAX;
+const GRAY_SEMINAR_SUPPLY_MAX = constants.GRAY_SEMINAR_2_SUPPLY_MAX;
 
 async function main() {
 
@@ -29,7 +29,6 @@ async function main() {
                 client = Client.forTestnet();
         }
     }
-console.log(process.env.HEDERA_NETWORK)
     if (process.env.HBAR_OPERATOR_KEY != null && process.env.HBAR_OPERATOR_ID != null) {
         const operatorKey = PrivateKey.fromString(process.env.HBAR_OPERATOR_KEY);
         const operatorId = AccountId.fromString(process.env.HBAR_OPERATOR_ID);
@@ -50,8 +49,8 @@ console.log(process.env.HEDERA_NETWORK)
         .setWipeKey(client.operatorPublicKey)
         .setSupplyKey(client.operatorPublicKey)
         .setFreezeDefault(false)
-        .setTransactionMemo("[GW] Initial Create GSS #1")
-        .setTokenMemo("Gray Seminar Souvenir #1")
+        .setTransactionMemo("[GW] Initial Create GSS #2")
+        .setTokenMemo("Gray Seminar Souvenir #2")
         .execute(client);
 
     const tokenId = (await resp.getReceipt(client)).tokenId;
