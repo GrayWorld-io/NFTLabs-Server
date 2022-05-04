@@ -12,7 +12,7 @@ let mysqlConfig = {
 
 let con;    // provide db connection
 async function connect() {
-    con = await mysql.createConnection(mysqlConfig);
+    con = await mysql.createPool(mysqlConfig);
     return con;
     // handleDisconnect(con);
     // await con.connect
