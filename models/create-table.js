@@ -3,7 +3,8 @@ const dbConnect = require("../db/mysql-connector");
 
 exports.init = async () => {
     createTable('hedera_freshman_metadata', 'hedera_freshman_mint');
-    createTable('hedera_seminar_metadata', 'hedera_seminar_mint');
+    createTable('hedera_seminar_1_metadata', 'hedera_seminar_1_mint');
+    createTable('hedera_seminar_2_metadata', 'hedera_seminar_2_mint');
 }
 
 createTable = async (metadataTableName, mintTableName) => {

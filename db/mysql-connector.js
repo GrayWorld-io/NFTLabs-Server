@@ -12,17 +12,8 @@ let mysqlConfig = {
 
 let con;    // provide db connection
 async function connect() {
-    con = await mysql.createPool(mysqlConfig);
-    return con;
-    // handleDisconnect(con);
-    // await con.connect
-    // con.connect(function (err) {
-    //     if (err) {
-    //         logger.error(err);
-    //         return callback(err);
-    //     }
-    //     return callback(null);
-    // });
+    con = mysql.createPool(mysqlConfig);
+    return await con.getConnection();
 }
 
 function handleDisconnect(client) {
