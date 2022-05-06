@@ -5,7 +5,13 @@ var mintController = require("../controllers/mint");
 var response = require("../utils/response");
 var logger = require("../utils/logger");
 
-router.post("/getTx", async (req, res) => {
+
+checkWhiteList = (req, res, next) => {
+  console.log('whitelisting');
+  next()
+}
+
+router.post("/getTx", checkWhiteList, async (req, res) => {
   console.log(req.url + " post body: " + JSON.stringify(req.body));
   try {
     let response = await mintController.getMintTx(req.body);
@@ -45,7 +51,7 @@ router.post("/checkMintable", async (req, res) => {
   }
 });
 
-router.post("/claim", async (req, res) => {
+router.post("/claim", checkWhiteList, async (req, res) => {
   console.log(req.url + " post body: " + JSON.stringify(req.body));
   try {
     let response = await mintController.claimNFT(req.body);

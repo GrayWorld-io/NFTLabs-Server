@@ -172,14 +172,14 @@ getMintableSerial = async (project, accountId) => {
     if (res.length > 0) {
       return -1;
     }
-    res = await graySeminarMintDB.getMintCount();
+    res = await graySeminarMintDB.getMintCount(1);
     mintCount = res[0].count;
   } else if (project == GRAY_SEMINAR_2) {
     let res = await graySeminarMintDB.selectHederaGraySeminarMintAddress(accountId, null, 2);
     if (res.length > 0) {
       return -1;
     }
-    res = await graySeminarMintDB.getMintCount();
+    res = await graySeminarMintDB.getMintCount(2);
     mintCount = res[0].count;
   }
   console.log(mintCount);
