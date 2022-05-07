@@ -5,7 +5,8 @@ var graySeminarMetadataDB = require("../../models/hedera/gray/seminar/metadata")
 var hedera = require("../../hedera/hedera");
 var logger = require("../../utils/logger");
 
-var constants = require("../../lib/constants");
+var constants = require("../../lib/constants/constants_token_info");
+var resCode = require("../../lib/constants/constants_res_code");
 
 // const FRESHMAN_MAX = 5;
 // const SERIAL_START = 1;
@@ -79,7 +80,9 @@ exports.getMintTx = async (req) => {
   const project = req.project;
   const randImgIndex = await getMintableSerial(req.project, req.accountId)
   if (randImgIndex === -1 ) {
-    return false;
+    return {
+      result: resCode.MINT_AMOUNT_EXCEED
+    }
   }
   const cid = await selectMetadata(req.project, randImgIndex);
   let tx;
@@ -88,7 +91,10 @@ exports.getMintTx = async (req) => {
     tx = await hedera.getTokenMintTransaction(operatorPay, req.accountId, GRAY_SEMINAR_2_TOKEN_ID, GRAY_SEMINAR_METADATA_PROTOCOL, cid[0].cid)
   }
   
-  return tx.toBytes();
+  return {
+    code: resCode.MINT_SUCCESS,
+    tx: tx.toBytes()
+  } 
 }
 
 exports.sendMintTx = async (req) => {

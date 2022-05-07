@@ -9,7 +9,7 @@ const {
     TokenCreateTransaction,
 } = require("@hashgraph/sdk");
 
-const constants = require("../lib/constants");
+const constants = require("../lib/constants/constants_token_info");
 
 const GRAY_SEMINAR_SUPPLY_MAX = constants.GRAY_SEMINAR_2_SUPPLY_MAX;
 

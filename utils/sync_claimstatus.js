@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 var graySeminarMintDB = require("../models/hedera/gray/seminar/mint");
-var constants = require("../lib/constants");
+var constants = require("../lib/constants/constants_token_info");
 const logger = require("./logger");
 
 const GRAY_SEMINAR_1_TOKEN_ID = constants.GRAY_SEMINAR_1_TOKEN_ID;

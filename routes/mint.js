@@ -2,21 +2,17 @@ var express = require("express");
 var router = express.Router();
 
 var mintController = require("../controllers/mint");
+var whiteListController = require("../controllers/whitelist");
 var response = require("../utils/response");
 var logger = require("../utils/logger");
 
 
-checkWhiteList = (req, res, next) => {
-  console.log('whitelisting');
-  next()
-}
-
-router.post("/getTx", checkWhiteList, async (req, res) => {
+router.post("/getTx", whiteListController.checkWhiteList, async (req, res) => {
   console.log(req.url + " post body: " + JSON.stringify(req.body));
   try {
     let response = await mintController.getMintTx(req.body);
     res.send({
-      tx: response
+      result: response
     })
   } catch (e) {
     console.log(e);
@@ -51,7 +47,7 @@ router.post("/checkMintable", async (req, res) => {
   }
 });
 
-router.post("/claim", checkWhiteList, async (req, res) => {
+router.post("/claim", whiteListController.checkWhiteList, async (req, res) => {
   console.log(req.url + " post body: " + JSON.stringify(req.body));
   try {
     let response = await mintController.claimNFT(req.body);

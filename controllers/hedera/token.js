@@ -2,7 +2,7 @@ var freshManMintDB = require("../../models/hedera/freshman/mint");
 var freshManMetadataDB = require("../../models/hedera/freshman/metadata");
 var hedera = require("../../hedera/hedera");
 var logger = require("../../utils/logger");
-var constants = require("../../lib/constants");
+var constants = require("../../lib/constants/constants_token_info");
 
 exports.tokenAssociate = async (req) => {
   let tokenId;
