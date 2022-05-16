@@ -11,7 +11,7 @@ const {
 
 const constants = require("../lib/constants/constants_token_info");
 
-const GRAY_SEMINAR_SUPPLY_MAX = constants.GRAY_SEMINAR_2_SUPPLY_MAX;
+const GRAY_SEMINAR_SUPPLY_MAX = constants.GRAY_FRESHMAN_SUPPLY_MAX;
 
 async function main() {
 
@@ -41,7 +41,7 @@ async function main() {
         .setInitialSupply(0)
         .setSupplyType(TokenSupplyType.Finite)
         .setMaxSupply(TOKEN_MAX_SUPPLY)
-        .setTokenName("Gray FreshMan")
+        .setTokenName("GrayFreshMan")
         .setTokenSymbol("GFM")
         .setTreasuryAccountId(client.operatorAccountId)
         .setAdminKey(client.operatorPublicKey)
