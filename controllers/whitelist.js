@@ -5,6 +5,7 @@ const resCode = require('../lib/constants/constants_res_code');
 const logger = require('../utils/logger');
 const GRAY_SEMINAR_1 = constants.GRAY_SEMINAR_1;
 const GRAY_SEMINAR_2 = constants.GRAY_SEMINAR_2;
+const GRAY_FRESHMAN = constants.GRAY_FRESHMAN;
 
 exports.checkWhiteList = (req, res, next) => {
     console.log('whitelisting');
@@ -19,6 +20,8 @@ exports.checkWhiteList = (req, res, next) => {
         } else if (project == GRAY_SEMINAR_2) {
             whiteListFile = fs.readFileSync('./whitelist/gray_seminar_2.json', 'utf8');
             whiteListing = isWhiteListing(whiteListFile, accountId);
+        } else if (project == GRAY_FRESHMAN) {
+            whiteListing = true;
         }
         if (!whiteListing) {
             console.log(`${project}: ${accountId} is not whitelisting!`)

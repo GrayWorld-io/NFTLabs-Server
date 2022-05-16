@@ -7,6 +7,7 @@ exports.getMintCount = async (seminarNumber) => {
   let [rows, fields] = await connection.query(sql);
   return rows;
 }
+
 exports.insertHederaGraySeminarMint = async (mint, seminarNumber) => {
   let sql = `INSERT INTO hedera_seminar_${seminarNumber}_mint (tokenId, serial, mintAddress) VALUES ('${mint.tokenId}', '${mint.serial}', '${mint.mintAddress}') `;
   logger.info(sql);

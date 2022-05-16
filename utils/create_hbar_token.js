@@ -41,16 +41,16 @@ async function main() {
         .setInitialSupply(0)
         .setSupplyType(TokenSupplyType.Finite)
         .setMaxSupply(TOKEN_MAX_SUPPLY)
-        .setTokenName("Gray Seminar Souvenir")
-        .setTokenSymbol("GSS")
+        .setTokenName("Gray FreshMan")
+        .setTokenSymbol("GFM")
         .setTreasuryAccountId(client.operatorAccountId)
         .setAdminKey(client.operatorPublicKey)
         .setFreezeKey(client.operatorPublicKey)
         .setWipeKey(client.operatorPublicKey)
         .setSupplyKey(client.operatorPublicKey)
         .setFreezeDefault(false)
-        .setTransactionMemo("[GW] Initial Create GSS #2")
-        .setTokenMemo("Gray Seminar Souvenir #2")
+        .setTransactionMemo("[GW] Initial Create GFM #1")
+        .setTokenMemo("Gray FreshMan #1")
         .execute(client);
 
     const tokenId = (await resp.getReceipt(client)).tokenId;

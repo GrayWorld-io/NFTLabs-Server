@@ -1,6 +1,13 @@
 const logger = require("../../../utils/logger");
 const dbConnect = require("../../../db/mysql-connector");
 
+exports.getMintCount = async () => {
+  let sql = `select count(*) as count from hedera_freshman_mint`;
+  let connection = await dbConnect.getDBCon();
+  let [rows, fields] = await connection.query(sql);
+  return rows;
+}
+
 exports.insertHederaFreshManMint = async (mint) => {
   let sql = `INSERT INTO hedera_freshman_mint (tokenId, serial, mintAddress) VALUES ('${mint.tokenId}', '${mint.serial}', '${mint.mintAddress}') `;
   logger.info(sql);
@@ -20,7 +27,12 @@ exports.selectHederaFreshmManMintAddressBySerial = async (serial) => {
 };
 
 exports.selectHederaFreshmManMintAddress = async (mintAddress, claim) => {
-  let sql = `select serial, mintAddress, claim from hedera_freshman_mint where mintAddress = '${mintAddress}' and claim = ${claim}`;
+  let sql = '';
+  if (claim === null) {
+    sql = `select serial, mintAddress, claim from hedera_freshman_mint where mintAddress = '${mintAddress}'`;
+  } else {
+    sql = `select serial, mintAddress, claim from hedera_freshman_mint where mintAddress = '${mintAddress}' and claim = ${claim}`;
+  }
   logger.info(sql);
   let connection = await dbConnect.getDBCon();
   let [rows, fields] = await connection.query(sql);

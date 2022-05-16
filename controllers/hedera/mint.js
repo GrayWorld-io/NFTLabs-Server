@@ -16,6 +16,11 @@ var resCode = require("../../lib/constants/constants_res_code");
 
 const SERIAL_START = constants.SERIAL_START;
 
+const GRAY_FRESHMAN = constants.GRAY_FRESHMAN;
+const GRAY_FRESHMAN_TOKEN_ID = constants.GRAY_FRESHMAN_TOKEN_ID;
+const GRAY_FRESHMAN_METADATA_PROTOCOL = constants.GRAY_FRESHMAN_METADATA_PROTOCOL;
+const GRAY_FRESHMAN_MINT_PRICE = constants.GRAY_FRESHMAN_MINT_PRICE;
+
 const GRAY_SEMINAR_1 = constants.GRAY_SEMINAR_1;
 const GRAY_SEMINAR_SUPPLY_MAX = constants.GRAY_SEMINAR_SUPPLY_MAX;
 const GRAY_SEMINAR_1_TOKEN_ID = constants.GRAY_SEMINAR_1_TOKEN_ID;
@@ -27,24 +32,14 @@ const GRAY_SEMINAR_2_TOKEN_ID = constants.GRAY_SEMINAR_2_TOKEN_ID;
 const GRAY_SEMINAR_METADATA_PROTOCOL = constants.GRAY_SEMINAR_METADATA_PROTOCOL;
 const GRAY_SEMINAR_MINT_PRICE = constants.GRAY_SEMINAR_MINT_PRICE;
 
-// exports.mintWithTransferTx = async (req) => {
-//   const nftMintingAccountId = req.accountId;
-//   const randImgIndex = await getMintableSerial(req.project)
-//   console.log(randImgIndex)
-//   console.log(nftMintingAccountId)
-//   //todo set index
-//   const cid = await selectMetadata(1);
-//   const serial = await hedera.mintNFT(FRESHMAN_TOKEN_ID, FRESHMAN_STORAGE, cid)
-//   console.log(serial[0].toString());
-//   return await hedera.getTransferTx(FRESHMAN_TOKEN_ID, serial[0].toString(), nftMintingAccountId, FRESHMAN_MINT_PRICE);
-// }
-
 exports.updateClaimStatus = async (req) => {
   const project = req.project;
   if (project === GRAY_SEMINAR_1) {
     graySeminarMintDB.updateClaimByMintAddress(req.accountId, 1, 1);
   } else if (project === GRAY_SEMINAR_2) {
     graySeminarMintDB.updateClaimByMintAddress(req.accountId, 1, 2);
+  } else if (project === GRAY_FRESHMAN) {
+    freshManMintDB.updateClaimByMintAddress(req.accountId, 1);
   } else {
     return false;
   }
@@ -68,6 +63,14 @@ exports.claim = async (req) => {
     const operatorPay = true;
     let tx = await hedera.getTransferTx(operatorPay, GRAY_SEMINAR_2_TOKEN_ID, serials[0].serial, req.accountId, GRAY_SEMINAR_MINT_PRICE);
     return tx.toBytes();
+  }  else if (project === GRAY_FRESHMAN) {
+    const serials = await freshManMintDB.selectHederaFreshmManMintAddress(req.accountId, 0);
+    if (serials.length !== 1) {
+      return false;
+    }
+    const operatorPay = true;
+    let tx = await hedera.getTransferTx(operatorPay, GRAY_FRESHMAN_TOKEN_ID, serials[0].serial, req.accountId, GRAY_FRESHMAN_MINT_PRICE);
+    return tx.toBytes();
   } 
   return false;
 }
@@ -79,16 +82,21 @@ exports.checkMintable = async (req) => {
 exports.getMintTx = async (req) => {
   const project = req.project;
   const randImgIndex = await getMintableSerial(req.project, req.accountId)
-  if (randImgIndex === -1 ) {
-    return {
-      result: resCode.MINT_AMOUNT_EXCEED
-    }
-  }
-  const cid = await selectMetadata(req.project, randImgIndex);
+  
   let tx;
   if (project == GRAY_SEMINAR_2) {
+    if (randImgIndex === -1 ) {
+      return {
+        code: resCode.MINT_AMOUNT_EXCEED
+      }
+    }
+    const cid = await selectMetadata(req.project, randImgIndex);
     const operatorPay = true;
     tx = await hedera.getTokenMintTransaction(operatorPay, req.accountId, GRAY_SEMINAR_2_TOKEN_ID, GRAY_SEMINAR_METADATA_PROTOCOL, cid[0].cid)
+  } else if (project == GRAY_FRESHMAN) {
+    const cid = await selectMetadata(req.project, randImgIndex);
+    const operatorPay = true;
+    tx = await hedera.getTokenMintTransaction(operatorPay, req.accountId, GRAY_FRESHMAN_TOKEN_ID, GRAY_FRESHMAN_METADATA_PROTOCOL, cid[0].cid)
   }
   
   return {
@@ -117,7 +125,14 @@ exports.sendMintTx = async (req) => {
       mintAddress: req.accountId
     }
     graySeminarMintDB.insertHederaGraySeminarMint(data, 2);
-  }
+  } else if (req.project == GRAY_FRESHMAN) {
+    let data = {
+      tokenId: GRAY_FRESHMAN_TOKEN_ID,
+      serial: serial[0].toString(),
+      mintAddress: req.accountId
+    }
+    freshManMintDB.insertHederaFreshManMint(data);
+  } 
   
   return true;
 }
@@ -127,9 +142,9 @@ checkMintable = async (project, accountId, claim) => {
   if (project === GRAY_SEMINAR_1) {
     unClaimHistory = await graySeminarMintDB.selectHederaGraySeminarMintAddress(accountId, claim, 1)
   } else if (project == GRAY_SEMINAR_2) {
-    unClaimHistory = await freshManMintDB.selectHederaFreshmManMintAddress(accountId, claim)
-  } else if (project == "freshman") {
     unClaimHistory = await graySeminarMintDB.selectHederaGraySeminarMintAddress(accountId, claim, 2)
+  } else if (project == GRAY_FRESHMAN) {
+    unClaimHistory = await freshManMintDB.selectHederaFreshmManMintAddress(accountId, claim)
   }
   
   if (unClaimHistory.length > 0 ) {
@@ -147,7 +162,7 @@ checkMintable = async (project, accountId, claim) => {
 selectMetadata = async (project, index) => {
   if (project == GRAY_SEMINAR_2) {
     return await graySeminarMetadataDB.selectHederaGraySeminarMetadata(index);
-  } else if (project == "freshman") {
+  } else if (project == "gray_freshman") {
     return await freshManMetadataDB.selectHederaFreshmManMetadata(index);
   }
 }
@@ -187,7 +202,14 @@ getMintableSerial = async (project, accountId) => {
     }
     res = await graySeminarMintDB.getMintCount(2);
     mintCount = res[0].count;
-  }
+  } else if (project == GRAY_FRESHMAN) {
+    let res = await freshManMintDB.selectHederaFreshmManMintAddress(accountId, null);
+    // if (res.length > 0) {
+    //   return -1;
+    // }
+    res = await freshManMintDB.getMintCount();
+    mintCount = res[0].count;
+  } 
   console.log(mintCount);
   return mintCount + 1;
 }

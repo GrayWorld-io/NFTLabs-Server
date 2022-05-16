@@ -8,6 +8,7 @@ var cors = require('cors');
 var indexRouter = require('./routes/index');
 var mintRouter = require('./routes/mint');
 var tokenRouter = require('./routes/token');
+var myRouter = require('./routes/my');
 
 var dbTableInit = require('./models/create-table').init();
 var app = express();
@@ -27,6 +28,7 @@ app.use(cors());
 app.use('/', indexRouter);
 app.use('/token', tokenRouter);
 app.use('/mint', mintRouter);
+app.use('/my', myRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
